@@ -310,7 +310,7 @@ export const Header = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5, duration: 0.6 }}
         >
-          Bandas
+          
         </NavLink>
         <NavLink 
           href="#events"
@@ -318,7 +318,7 @@ export const Header = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6, duration: 0.6 }}
         >
-          Eventos
+          
         </NavLink>
         
         <ExploreButton
