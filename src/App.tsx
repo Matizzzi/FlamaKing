@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { GlobalStyle } from './styles/GlobalStyle';
 import { Hero } from './components/Hero';
 import { Footer } from './components/Footer';
