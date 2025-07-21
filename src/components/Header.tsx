@@ -1,87 +1,99 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaBars, FaTimes } from 'react-icons/fa';
 import { colors } from '../styles/theme';
 
-// Animaciones mejoradas
-const bloodPulse = keyframes`
-  0% { opacity: 0.8; }
-  50% { opacity: 1; transform: scale(1.02); }
-  100% { opacity: 0.8; }
+// Animaciones
+const hellfireGlow = keyframes`
+  0%, 100% {
+    text-shadow: 
+      0 0 5px ${colors.rojoSangre},
+      0 0 10px rgba(193, 18, 31, 0.5);
+  }
+  50% {
+    text-shadow: 
+      0 0 15px ${colors.rojoSangre},
+      0 0 30px rgba(193, 18, 31, 0.8);
+  }
 `;
 
+const bloodDrip = keyframes`
+  0% { background-position: 0 0; }
+  100% { background-position: 0 100vh; }
+`;
+
+// Estilos
 const HeaderContainer = styled(motion.header)`
-  background: linear-gradient(
-    180deg, 
-    rgba(10, 10, 10, 0.95) 0%, 
-    rgba(30, 7, 7, 0.85) 100%
-  );
-  padding: 1rem 2rem;
+  background: 
+    linear-gradient(rgba(10, 10, 10, 0.98), rgba(20, 5, 5, 0.95)),
+    url('https://www.transparenttextures.com/patterns/dark-leather.png');
+  padding: 1.2rem 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 2px solid ${colors.rojoSangre};
   position: sticky;
   top: 0;
-  z-index: 100;
-  backdrop-filter: blur(8px);
+  z-index: 1000;
+  backdrop-filter: blur(10px);
   box-shadow: 
-    0 0 25px rgba(193, 18, 31, 0.4),
-    inset 0 -5px 15px rgba(0, 0, 0, 0.5);
+    0 5px 30px rgba(193, 18, 31, 0.3),
+    inset 0 -1px 0 ${colors.rojoSangre}30;
+  border-bottom: 1px solid ${colors.rojoSangre}50;
+
+  @media (max-width: 768px) {
+    padding: 1rem;
+    flex-wrap: wrap;
+  }
 `;
 
-const LogoContainer = styled.div`
+const LogoContainer = styled(motion.div)`
   display: flex;
   align-items: center;
-  gap: 0.8rem;
+  gap: 1rem;
   position: relative;
-  
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: -12px;
-    left: 0;
-    width: 100%;
-    height: 2px;
-    background: linear-gradient(90deg, ${colors.rojoSangre}, transparent);
+  cursor: pointer;
+  z-index: 1001;
+
+  @media (max-width: 480px) {
+    gap: 0.5rem;
   }
 `;
 
 const LogoText = styled(motion.h1)`
   font-family: 'UnifrakturCook', 'Cinzel Decorative', serif;
-  font-size: 2.4rem;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
   color: ${colors.rojoSangre};
-  text-shadow: 
-    0 0 10px ${colors.rojoSangre},
-    0 0 20px rgba(193, 18, 31, 0.5);
-  user-select: none;
-  letter-spacing: 2px;
-  position: relative;
   margin: 0;
-  animation: ${bloodPulse} 3s infinite ease-in-out;
+  letter-spacing: 3px;
+  position: relative;
+  animation: ${hellfireGlow} 3s ease-in-out infinite;
+  text-transform: uppercase;
   
-  &::before {
-    content: "FLAMAKING";
+  &::after {
+    content: '';
     position: absolute;
-    top: 0;
+    bottom: -10px;
     left: 0;
-    color: ${colors.blancoHueso};
-    z-index: -1;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, ${colors.rojoSangre}, transparent);
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
   }
 `;
 
-const Subtitle = styled.span`
+const Subtitle = styled(motion.span)`
   font-family: 'Poppins', sans-serif;
   color: ${colors.blancoHueso};
-  font-size: 0.7rem;
-  letter-spacing: 3px;
+  font-size: clamp(0.6rem, 1.5vw, 0.8rem);
+  letter-spacing: 4px;
   text-transform: uppercase;
-  opacity: 0.9;
-  text-shadow: 0 0 5px black;
+  padding-left: 1.5rem;
   position: relative;
-  padding-left: 1rem;
+  font-weight: 300;
   
   &::before {
     content: '';
@@ -89,31 +101,81 @@ const Subtitle = styled.span`
     left: 0;
     top: 50%;
     transform: translateY(-50%);
-    height: 15px;
-    width: 2px;
+    height: 20px;
+    width: 3px;
     background: ${colors.rojoSangre};
+    box-shadow: 0 0 10px ${colors.rojoSangre};
+  }
+
+  @media (max-width: 768px) {
+    display: none;
   }
 `;
 
 const Nav = styled.nav`
   display: flex;
-  gap: 1.8rem;
+  gap: 2.5rem;
   align-items: center;
+
+  @media (max-width: 1024px) {
+    gap: 1.5rem;
+  }
+
+  @media (max-width: 768px) {
+    display: none;
+  }
+`;
+
+const MobileMenuButton = styled(motion.button)`
+  background: none;
+  border: none;
+  color: ${colors.blancoHueso};
+  font-size: 1.8rem;
+  cursor: pointer;
+  display: none;
+  z-index: 1001;
+
+  @media (max-width: 768px) {
+    display: block;
+  }
+`;
+
+const MobileNav = styled(motion.div)`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: 
+    linear-gradient(rgba(10, 10, 10, 0.98), rgba(20, 5, 5, 0.97)),
+    url('https://www.transparenttextures.com/patterns/dark-leather.png');
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  z-index: 1000;
+  padding: 2rem;
 `;
 
 const NavLink = styled(motion.a).attrs(() => ({
-  whileHover: { scale: 1.05 },
+  whileHover: { 
+    y: -3,
+    color: colors.rojoSangre
+  },
   whileTap: { scale: 0.95 }
 }))`
   font-family: 'Poppins', sans-serif;
   color: ${colors.blancoHueso};
   text-transform: uppercase;
-  font-weight: 700;
-  letter-spacing: 1.8px;
+  font-weight: 600;
+  letter-spacing: 2px;
   position: relative;
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
   padding: 0.5rem 0;
+  transition: all 0.3s ease;
   
   &::before {
     content: '';
@@ -127,89 +189,201 @@ const NavLink = styled(motion.a).attrs(() => ({
   }
 
   &:hover {
-    color: ${colors.rojoSangre};
     text-shadow: 0 0 10px ${colors.rojoSangre};
     
     &::before {
       width: 100%;
     }
   }
+
+  @media (max-width: 768px) {
+    font-size: 1.2rem;
+    padding: 0.8rem 0;
+  }
 `;
 
-const NavButton = styled(motion.button).attrs(() => ({
-  whileHover: { scale: 1.05 },
+const ExploreButton = styled(motion.a).attrs(() => ({
+  whileHover: { 
+    scale: 1.05,
+    boxShadow: `0 0 30px ${colors.rojoSangre}`
+  },
   whileTap: { scale: 0.95 }
 }))`
-  background: linear-gradient(
-    145deg, 
-    ${colors.rojoSangre} 0%, 
-    #7a0c14 100%
-  );
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(145deg, #1a1a1a, #333);
   color: ${colors.blancoHueso};
-  border: none;
-  padding: 0.7rem 2rem;
+  padding: 0.8rem 2rem;
   font-weight: 700;
   font-family: 'Poppins', sans-serif;
   text-transform: uppercase;
-  border-radius: 30px;
+  border-radius: 50px;
+  border: 2px solid ${colors.rojoSangre};
+  cursor: pointer;
+  text-decoration: none;
+  font-size: clamp(0.8rem, 2vw, 0.9rem);
+  letter-spacing: 2px;
   box-shadow: 
-    0 0 15px rgba(193, 18, 31, 0.6),
-    inset 0 1px 1px rgba(255, 255, 255, 0.2);
-  transition: all 0.3s ease;
-  user-select: none;
-  letter-spacing: 1.5px;
+    0 5px 20px rgba(0, 0, 0, 0.7),
+    0 0 15px ${colors.rojoSangre}80;
   position: relative;
   overflow: hidden;
-  cursor: pointer;
   
   &::before {
     content: '';
     position: absolute;
-    top: -100%;
-    left: -100%;
-    width: 300%;
-    height: 300%;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
     background: linear-gradient(
-      to right,
-      rgba(255, 255, 255, 0) 45%,
-      rgba(255, 255, 255, 0.15) 50%,
-      rgba(255, 255, 255, 0) 55%
+      to bottom right,
+      transparent 45%,
+      ${colors.rojoSangre}20 50%,
+      transparent 55%
     );
-    transform: rotate(45deg);
-    transition: all 0.5s ease;
+    animation: ${bloodDrip} 6s linear infinite;
+  }
+  
+  &:hover {
+    background: linear-gradient(145deg, #333, #1a1a1a);
+    color: ${colors.rojoSangre};
   }
 
-  &:hover {
-    box-shadow: 
-      0 0 25px rgba(193, 18, 31, 0.8),
-      inset 0 1px 1px rgba(255, 255, 255, 0.3);
-    
-    &::before {
-      left: 100%;
-      top: 100%;
-    }
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    padding: 1rem 2.5rem;
+    margin-top: 1rem;
   }
 `;
 
 export const Header = () => {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <HeaderContainer
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      transition={{ type: 'spring', damping: 10 }}
+      initial={{ y: -100, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ type: 'spring', damping: 10, stiffness: 100 }}
     >
-      <LogoContainer>
-        <LogoText>FLAMAKING</LogoText>
-        <Subtitle>PERIODISMO EXTREMO</Subtitle>
+      <LogoContainer
+        whileHover={{ scale: 1.03 }}
+        whileTap={{ scale: 0.97 }}
+      >
+        <LogoText
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+        >
+          FLAMAKING
+        </LogoText>
+        <Subtitle
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.8 }}
+          transition={{ delay: 0.4, duration: 1 }}
+        >
+          Periodismo Extremo
+        </Subtitle>
       </LogoContainer>
       
       <Nav>
-        <NavLink href="#tiktoks">TikToks</NavLink>
-        <NavLink href="#about">Quién es</NavLink>
-        <NavLink href="#bands">Bandas</NavLink>
-        <NavLink href="#events">Eventos</NavLink>
-        <NavButton>¡Explorar!</NavButton>
+        <NavLink 
+          href="#tiktoks"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.6 }}
+        >
+          TikToks
+        </NavLink>
+        <NavLink 
+          href="#about"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.6 }}
+        >
+          Quién es
+        </NavLink>
+        <NavLink 
+          href="#bands"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+        >
+          Bandas
+        </NavLink>
+        <NavLink 
+          href="#events"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6, duration: 0.6 }}
+        >
+          Eventos
+        </NavLink>
+        
+        <ExploreButton
+          href="https://www.tiktok.com/@flamaking_"
+          target="_blank"
+          rel="noopener noreferrer"
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.7, type: 'spring' }}
+        >
+          ¡Explorar!
+        </ExploreButton>
       </Nav>
+
+      <MobileMenuButton
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        whileTap={{ scale: 0.9 }}
+      >
+        {mobileMenuOpen ? <FaTimes /> : <FaBars />}
+      </MobileMenuButton>
+
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <MobileNav
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ type: 'spring', damping: 20 }}
+          >
+            <NavLink 
+              href="#tiktoks"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              TikToks
+            </NavLink>
+            <NavLink 
+              href="#about"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              Quién es
+            </NavLink>
+            <NavLink 
+              href="#bands"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              
+            </NavLink>
+            <NavLink 
+              href="#events"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              
+            </NavLink>
+            
+            <ExploreButton
+              href="https://www.tiktok.com/@flamaking_"
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              ¡Explorar!
+            </ExploreButton>
+          </MobileNav>
+        )}
+      </AnimatePresence>
     </HeaderContainer>
   );
 };

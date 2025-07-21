@@ -158,7 +158,7 @@ export const AboutSection = () => {
         viewport={{ once: true }}
       >
         <Description>
-          Periodista chileno y <strong>metalhead sin filtro</strong>. Difunde bandas de metal extremo con mensajes sociales, políticos e históricos. Especializado en <strong>guturales, análisis crudos</strong> y cultura underground. Autodenominado <strong>embajador de la distorsión crítica</strong>.
+          Periodista chileno y <strong>metalhead sin filtro</strong>. Difunde bandas de metal y rock con mensajes sociales, políticos e históricos. Especializado en <strong>guturales, análisis crudos</strong> y cultura underground. Autodenominado <strong>embajador de la distorsión crítica</strong>.
         </Description>
 
         <HighlightPhrase

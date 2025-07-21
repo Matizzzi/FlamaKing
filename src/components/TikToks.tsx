@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
-import { FaTiktok } from 'react-icons/fa';
-import { colors } from '../styles/theme';
+import { FaTiktok, FaChevronLeft, FaChevronRight } from 'react-icons/fa';
+
+// Colores
+const colors = {
+  rojoSangre: '#c1121f',
+  grisMetal: '#333333',
+  blancoHueso: '#f8f9fa'
+};
 
 // Animaciones
 const metalPulse = keyframes`
@@ -98,6 +104,7 @@ const VideosContainer = styled.div`
   scrollbar-width: none;
   max-width: 1400px;
   margin: 0 auto;
+  position: relative;
 
   &::-webkit-scrollbar {
     display: none;
@@ -125,7 +132,7 @@ const VideoCard = styled(motion.div).attrs(() => ({
 
 const VideoWrapper = styled.div`
   position: relative;
-  padding-top: 125%; // Relación de aspecto para TikTok
+  padding-top: 125%;
   iframe {
     position: absolute;
     top: 0;
@@ -176,46 +183,134 @@ const PlatformIcon = styled(motion.div).attrs(() => ({
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.7);
 `;
 
+const NavigationButton = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  border: 2px solid ${colors.rojoSangre};
+  color: ${colors.blancoHueso};
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    background: ${colors.rojoSangre};
+    transform: translateY(-50%) scale(1.1);
+  }
+  
+  &:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+`;
+
+const LeftButton = styled(NavigationButton)`
+  left: 20px;
+`;
+
+const RightButton = styled(NavigationButton)`
+  right: 20px;
+`;
+
+const ScrollIndicator = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 10;
+`;
+
+interface DotProps {
+  active: boolean;
+}
+
+const Dot = styled.div<DotProps>`
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: ${props => props.active ? colors.rojoSangre : colors.grisMetal};
+  cursor: pointer;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: scale(1.3);
+  }
+`;
+
 // Videos de TikTok
 const tiktoks = [
   {
     id: '1',
     url: 'https://www.tiktok.com/@flamaking_/video/7524577000804060421',
     embedUrl: 'https://www.tiktok.com/embed/v2/7524577000804060421',
-    caption: '¡Concierto brutal en el infierno! 🔥',
+    caption: '¡Back to the Beginning! 🔥',
     platform: 'tiktok'
   },
   {
     id: '2',
     url: 'https://www.tiktok.com/@flamaking_/video/7527446964368067896',
     embedUrl: 'https://www.tiktok.com/embed/v2/7527446964368067896',
-    caption: 'Nuevo riff demoníaco 🎸',
+    caption: ' ¡El Debut de Skillet!🎸',
     platform: 'tiktok'
   },
   {
     id: '3',
     url: 'https://www.tiktok.com/@flamaking_/video/7527410572615339270',
     embedUrl: 'https://www.tiktok.com/embed/v2/7527410572615339270',
-    caption: 'Growling nivel diablo 👹',
+    caption: 'Raff Glam vive 👹',
     platform: 'tiktok'
   },
   {
     id: '4',
     url: 'https://www.tiktok.com/@flamaking_/video/7522734103712500997',
     embedUrl: 'https://www.tiktok.com/embed/v2/7522734103712500997',
-    caption: 'Metal extremo para almas oscuras',
+    caption: 'Sex pistols en Chile',
     platform: 'tiktok'
   },
   {
     id: '5',
     url: 'https://www.tiktok.com/@flamaking_/video/7527080615582125368',
     embedUrl: 'https://www.tiktok.com/embed/v2/7527080615582125368',
-    caption: 'Destruyendo guitarras 🤘',
+    caption: 'Posible Regreso de Limp Bizkit🤘',
     platform: 'tiktok'
   }
 ];
 
 export const TikTokSection = () => {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  const scrollToIndex = (index: number) => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    const cards = container.querySelectorAll('[data-video-card]');
+    if (index >= cards.length) index = 0;
+    if (index < 0) index = cards.length - 1;
+    
+    cards[index].scrollIntoView({
+      behavior: 'smooth',
+      block: 'nearest',
+      inline: 'center'
+    });
+    
+    setCurrentIndex(index);
+  };
+  
+  const handleNext = () => scrollToIndex(currentIndex + 1);
+  const handlePrev = () => scrollToIndex(currentIndex - 1);
+  
+  const handleDotClick = (index: number) => scrollToIndex(index);
+  
   return (
     <Section id="tiktoks">
       <BloodSplatter />
@@ -229,34 +324,55 @@ export const TikTokSection = () => {
         TIKTOKS DESTACADOS
       </Title>
 
-      <VideosContainer>
-        {tiktoks.map((video) => (
-          <VideoCard 
-            key={video.id}
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <VideoWrapper>
-              <iframe
-                src={video.embedUrl}
-                title={`TikTok de FlamaKing ${video.id}`}
-                allowFullScreen
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              />
-            </VideoWrapper>
-            
-            <VideoCaption>
-              <CaptionText>{video.caption}</CaptionText>
-            </VideoCaption>
-            
-            <PlatformIcon>
-              <FaTiktok color="#ff0050" />
-            </PlatformIcon>
-          </VideoCard>
-        ))}
-      </VideosContainer>
+      <div style={{ position: 'relative' }}>
+        <LeftButton onClick={handlePrev} disabled={currentIndex === 0}>
+          <FaChevronLeft size={24} />
+        </LeftButton>
+        
+        <VideosContainer ref={containerRef}>
+            {tiktoks.map((video) => (
+            <VideoCard 
+              key={video.id}
+              data-video-card
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+            >
+              <VideoWrapper>
+                <iframe
+                  src={video.embedUrl}
+                  title={`TikTok de FlamaKing ${video.id}`}
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </VideoWrapper>
+              
+              <VideoCaption>
+                <CaptionText>{video.caption}</CaptionText>
+              </VideoCaption>
+              
+              <PlatformIcon>
+                <FaTiktok color="#ff0050" />
+              </PlatformIcon>
+            </VideoCard>
+          ))}
+        </VideosContainer>
+        
+        <RightButton onClick={handleNext} disabled={currentIndex === tiktoks.length - 1}>
+          <FaChevronRight size={24} />
+        </RightButton>
+        
+        <ScrollIndicator>
+          {tiktoks.map((_, index) => (
+            <Dot 
+              key={index} 
+              active={index === currentIndex} 
+              onClick={() => handleDotClick(index)}
+            />
+          ))}
+        </ScrollIndicator>
+      </div>
     </Section>
   );
 };
