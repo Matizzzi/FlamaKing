@@ -1,4 +1,4 @@
-import React from 'react';
+
 import styled, { keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 import { FaTiktok, FaInstagram, FaEnvelope } from 'react-icons/fa';
